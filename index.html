@@ -19,13 +19,16 @@
         </div>
         
         <h2>Enter Login Details</h2>
-        <p style="font-size: 12px; color: #666; margin-bottom: 20px;">
-            <em>Hint: Type 'admin' for Admin Portal, 'prof' for Teacher Portal, or anything else for Student Portal.</em>
+        <p style="font-size: 13px; color: #666; margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 3px solid #0056b3;">
+            <strong>Test Credentials:</strong><br>
+            Admin: <em>ADM-001</em> / <em>admin123</em><br>
+            Teacher: <em>FAC-1029</em> / <em>prof123</em><br>
+            Student: <em>N005</em> / <em>student123</em>
         </p>
         
         <form id="login-form">
             <div class="input-group">
-                <label for="username">Email / SAP ID</label>
+                <label for="username">User ID / SAP ID</label>
                 <input type="text" id="username" name="username" required>
             </div>
             
@@ -39,18 +42,46 @@
     </div>
 
     <script>
-        // Simple routing logic based on username
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        // Real routing logic connected to Node.js backend
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent default form submission
             
-            const username = document.getElementById('username').value.toLowerCase();
+            const idValue = document.getElementById('username').value;
+            const passValue = document.getElementById('password').value;
             
-            if (username.includes('admin')) {
-                window.location.href = 'assets/admin-dashboard.html';
-            } else if (username.includes('prof') || username.includes('teacher')) {
-                window.location.href = 'assets/teacher-dashboard.html';
-            } else {
-                window.location.href = 'assets/dashboard.html';
+            try {
+                // Send the login details to our Node.js server
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: idValue, password: passValue })
+                });
+
+                // Read the server's reply
+                const data = await response.json();
+
+                if (data.success) {
+                    // LOGIN SUCCESSFUL!
+                    // Save the session details in Local Storage so all other pages know who is logged in
+                    localStorage.setItem('activeUserId', data.userId);
+                    localStorage.setItem('activeUserRole', data.role);
+                    localStorage.setItem('activeUserName', data.name);
+
+                    // Redirect to the correct portal based on their role from the database
+                    if (data.role === 'admin') {
+                        window.location.href = 'assets/admin-dashboard.html';
+                    } else if (data.role === 'teacher') {
+                        window.location.href = 'assets/teacher-dashboard.html';
+                    } else if (data.role === 'student') {
+                        window.location.href = 'assets/dashboard.html'; 
+                    }
+                } else {
+                    // LOGIN FAILED
+                    alert(data.message); // Shows "Invalid ID or Password!"
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Cannot connect to the server. Make sure your Node.js server is running!');
             }
         });
     </script>
