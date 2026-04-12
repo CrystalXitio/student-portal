@@ -10,11 +10,15 @@
 
     <div id="side-menu" class="side-menu">
         <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
-        <a href="admin-dashboard.html" class="active">Dashboard</a>
-        <a href="#">User Management</a>
-        <a href="#">Broadcast Announcements</a>
-        <a href="#">Fee Overviews</a>
-        <a href="#">Support Tickets (12)</a>
+        <a href="admin-dashboard.html" class="active">Dashboard Overview</a>
+        <a href="admin-students.html">Manage Students</a>
+        <a href="admin-teachers.html">Manage Teachers</a>
+        <a href="admin-courses.html">Manage Courses</a>
+        <a href="admin-subjects.html">Manage Subjects</a>
+        <a href="admin-classes.html">Manage Classes</a>
+        <a href="admin-fees.html">Fee Status</a>
+        <a href="admin-announcements.html">Announcements</a>
+        <a href="admin-tickets.html">Support Tickets</a>
     </div>
 
     <div id="main-content">
@@ -23,7 +27,16 @@
             <h1 class="portal-title">Administrator Portal</h1>
             <div class="header-right">
                 <div class="top-icons">
-                    <div class="profile-icon" style="background-color: #d35400;">ADM</div>
+                    <div class="dropdown-container">
+                        <span class="icon" title="Settings" onclick="toggleDropdown('settings-dropdown')">&#9881;</span>
+                        <div class="dropdown-menu" id="settings-dropdown">
+                            <div class="dropdown-header">Settings</div>
+                            <a href="javascript:void(0)" class="settings-item" onclick="openPasswordModal()">Change Password</a>
+                            <a href="javascript:void(0)" class="settings-item" onclick="toggleTheme()">Appearance (Dark/Light)</a>
+                            <a href="index.html" class="settings-item logout-link">Logout</a>
+                        </div>
+                    </div>
+                    <div class="profile-icon" style="background-color: #d35400;" onclick="window.location.href='admin-profile.html'" title="View Profile">ADM</div>
                 </div>
             </div>
         </header>
@@ -31,64 +44,50 @@
         <main class="dashboard-main">
             <div class="section-title">
                 <h2>College Overview</h2>
-                <p>System statistics and quick management links.</p>
+                <p>Real-time statistics of the college system.</p>
             </div>
 
-            <div class="info-grid">
+            <div class="info-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Total Students</h3>
-                    <div style="font-size: 36px; font-weight: bold; color: #2c3e50;">1,240</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">1,240</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px;">
-                    <h3 style="margin-top:0; color:#777;">Total Faculty</h3>
-                    <div style="font-size: 36px; font-weight: bold; color: #2c3e50;">85</div>
+                    <h3 style="margin-top:0; color:#777;">Total Teachers</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">85</div>
+                </div>
+                <div class="card" style="text-align: center; padding: 20px;">
+                    <h3 style="margin-top:0; color:#777;">Total Courses</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">12</div>
+                </div>
+                <div class="card" style="text-align: center; padding: 20px;">
+                    <h3 style="margin-top:0; color:#777;">Total Subjects</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">64</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Active Classes</h3>
-                    <div style="font-size: 36px; font-weight: bold; color: #2c3e50;">42</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">42</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px; border-bottom: 4px solid #e74c3c;">
                     <h3 style="margin-top:0; color:#777;">Pending Tickets</h3>
                     <div style="font-size: 36px; font-weight: bold; color: #e74c3c;">12</div>
                 </div>
             </div>
-
-            <div class="card" style="margin-top: 10px;">
-                <h2>Recent Grievance Tickets</h2>
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Ticket ID</th>
-                                <th>User</th>
-                                <th>Role</th>
-                                <th>Issue Category</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#TKT-001</td>
-                                <td>Agrim Arya (N005)</td>
-                                <td>Student</td>
-                                <td>Portal Access Issue</td>
-                                <td><span class="status-danger">Open</span></td>
-                                <td><button style="padding: 5px 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Resolve</button></td>
-                            </tr>
-                            <tr>
-                                <td>#TKT-002</td>
-                                <td>Prof. MKA</td>
-                                <td>Faculty</td>
-                                <td>Cannot upload grades</td>
-                                <td><span class="status-warn">In Progress</span></td>
-                                <td><button style="padding: 5px 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Resolve</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </main>
+    </div>
+
+    <div id="password-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePasswordModal()">&times;</span>
+            <h3>Change Password</h3>
+            <div class="input-group">
+                <label>New Password</label><input type="password">
+            </div>
+            <div class="input-group">
+                <label>Confirm New Password</label><input type="password">
+            </div>
+            <button class="submit-btn" onclick="closePasswordModal()">Enter</button>
+        </div>
     </div>
 
     <script src="../js/app.js"></script>
