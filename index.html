@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="../css/style-index.css">
+    <link rel="stylesheet" href="css/style-index.css">
 </head>
 <body>
     <script>
@@ -15,7 +15,7 @@
 
     <div class="login-container">
         <div class="logo-placeholder">
-            <img id="logo-img" src="logo.png" alt="College Logo">
+            <img id="logo-img" src="assets/logo.png" alt="College Logo">
         </div>
         
         <h2>Enter Login Details</h2>
@@ -46,11 +46,11 @@
             const username = document.getElementById('username').value.toLowerCase();
             
             if (username.includes('admin')) {
-                window.location.href = 'admin-dashboard.html';
+                window.location.href = 'assets/admin-dashboard.html';
             } else if (username.includes('prof') || username.includes('teacher')) {
-                window.location.href = 'teacher-dashboard.html';
+                window.location.href = 'assets/teacher-dashboard.html';
             } else {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'assets/dashboard.html';
             }
         });
     </script>
