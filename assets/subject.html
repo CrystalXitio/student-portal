@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Dashboard</title>
+    <link rel="stylesheet" href="../css/style-subject.css">
+</head>
+<body>
+    <div class="container">
+        <header class="subject-header" id="subject-header">
+            <h1 id="subject-title">Loading...</h1>
+            <p id="subject-desc">Loading details...</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>Attendance</h2>
+                <div class="attendance-stats">
+                    <div class="stat-box"><span class="stat-value" id="stat-attended">24</span><span class="stat-label">Attended</span></div>
+                    <div class="stat-box"><span class="stat-value" id="stat-missed">6</span><span class="stat-label">Missed</span></div>
+                    <div class="stat-box"><span class="stat-value" id="stat-total">30</span><span class="stat-label">Total</span></div>
+                    <div class="stat-box highlight"><span class="stat-value" id="stat-percent">80%</span><span class="stat-label">Percentage</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>ICA Marks</h2>
+                <div class="ica-container">
+                    <span class="ica-score">45</span><span class="ica-total">/ 50</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="assignment-heading">Assignments</h2>
+                <div class="controls">
+                    <button class="filter-btn active">Upcoming</button>
+                    <button class="filter-btn">Completed</button>
+                    <button class="filter-btn">Past Due</button>
+                </div>
+                <div class="scrollable-box">
+                    <div class="list-item">
+                        <div>
+                            <strong id="assignment-name">Sample Assignment 1</strong>
+                            <p id="assignment-desc">Complete the theory questions.</p>
+                        </div>
+                        <span class="badge upcoming" id="assignment-due">Due: Tomorrow</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Learning Resources</h2>
+                <div class="controls">
+                    <input type="text" class="search-input" placeholder="Search resources...">
+                    <select class="sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="az">A - Z</option>
+                    </select>
+                </div>
+                <div class="scrollable-box" id="resources-box">
+                    <div class="list-item"><strong id="resource-1">Syllabus.pdf</strong></div>
+                    <div class="list-item" id="resource-box-2"><strong id="resource-2">Chapter 1 Notes.pdf</strong></div>
+                </div>
+            </div>
+
+            <div class="card teams-card">
+                <h2>Teams Environment</h2>
+                <div class="teams-placeholder">
+                    <div class="chat-icon">💬</div>
+                    <p>Teams Chat Environment Placeholder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Get the subject ID from the URL (e.g., "?id=CVT-D2")
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectId = urlParams.get('id') || 'Unknown Subject';
+
+        // 2. Map the base abbreviations to their full names
+        const subjectNames = {
+            "CVT": "Complex Variables and Transforms",
+            "COA": "Computer Organization and Architecture",
+            "TCS": "Theoretical Computer Science",
+            "MPMC": "Microprocessors and Microcontrollers",
+            "WP": "Web Programming",
+            "DAA": "Design and Analysis of Algorithms",
+            "DBMS": "Database Management Systems",
+            "MAE": "Management, Accounting, and Economics",
+            "OOPJ": "Object Oriented Programming with Java"
+        };
+
+        // 3. Determine if this is a Lab (contains D1 or D2)
+        const isLab = subjectId.includes('-D1') || subjectId.includes('-D2');
+        
+        // Extract the base subject (e.g., "CVT" from "CVT-D1") and the batch (e.g., "D1")
+        const baseSubject = subjectId.split('-')[0];
+        const batch = isLab ? subjectId.substring(subjectId.indexOf('-') + 1) : '';
+
+        // Generate the full description (e.g., "Complex Variables and Transforms D1")
+        const fullDesc = (subjectNames[baseSubject] || baseSubject) + (isLab ? " " + batch : "");
+
+        // 4. Update the Page Title and Header
+        document.title = subjectId + " - Dashboard";
+        document.getElementById("subject-title").innerText = subjectId;
+        document.getElementById("subject-desc").innerText = fullDesc;
+
+        // 5. Apply Lab vs Theory specifics
+        if (isLab) {
+            // Change Header Color for Labs
+            document.getElementById("subject-header").style.backgroundColor = "#555";
+
+            // Update Attendance Stats to Lab numbers
+            document.getElementById("stat-attended").innerText = "10";
+            document.getElementById("stat-missed").innerText = "2";
+            document.getElementById("stat-total").innerText = "12";
+            document.getElementById("stat-percent").innerText = "83%";
+
+            // Update Assignment Details for Labs
+            document.getElementById("assignment-heading").innerText = "Lab Assignments";
+            document.getElementById("assignment-name").innerText = "Sample Lab Execution";
+            document.getElementById("assignment-desc").innerText = "Submit your code and output screenshots.";
+            document.getElementById("assignment-due").innerText = "Due: Friday";
+
+            // Update Resources for Labs
+            document.getElementById("resource-1").innerText = "Lab Manual.pdf";
+            document.getElementById("resource-box-2").style.display = "none"; // Hide the second resource
+        } 
+        // Note: We don't need an 'else' block because the HTML is already hardcoded with the default Theory values!
+    </script>
+</body>
+</html>
