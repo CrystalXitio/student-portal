@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="../css/style-index.css">
 </head>
 <body>
+    <script>
+        // Apply theme immediately to prevent flashing
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 
     <div class="login-container">
         <div class="logo-placeholder">

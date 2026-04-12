@@ -28,7 +28,7 @@ body {
 #logo-img {
     max-width: 100%;
     height: auto;
-    max-height: 90px; /* You can increase or decrease this number to make the logo bigger or smaller */
+    max-height: 90px; 
     object-fit: contain;
 }
 
@@ -84,4 +84,26 @@ input:focus {
 
 .login-btn:hover {
     background-color: #004494;
+}
+
+/* --- DARK MODE OVERRIDES --- */
+body.dark-mode {
+    background-color: #0b1120;
+}
+
+body.dark-mode .login-container {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body.dark-mode h2, 
+body.dark-mode label {
+    color: #e2e8f0;
+}
+
+body.dark-mode input {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: white;
 }
