@@ -61,6 +61,49 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+// ==========================================
+// API: ADMIN PORTAL
+// ==========================================
+
+// 1. Get Dashboard Statistics
+app.get('/api/admin/stats', (req, res) => {
+    // This is a neat SQL trick: running multiple COUNT queries in one go!
+    const sqlQuery = `
+        SELECT 
+            (SELECT COUNT(*) FROM users WHERE role='student') AS total_students,
+            (SELECT COUNT(*) FROM users WHERE role='teacher') AS total_teachers,
+            (SELECT COUNT(*) FROM courses) AS total_courses,
+            (SELECT COUNT(*) FROM subjects) AS total_subjects,
+            (SELECT COUNT(*) FROM classes) AS total_classes,
+            (SELECT COUNT(*) FROM tickets WHERE status='Open') AS pending_tickets
+    `;
+    
+    db.query(sqlQuery, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false });
+        }
+        res.json({ success: true, data: results[0] });
+    });
+});
+
+// 2. Add a New Student
+app.post('/api/admin/add-student', (req, res) => {
+    const { name, rollNo, sapId, courseId } = req.body;
+    const defaultPassword = 'password123'; // Standard default password for new students
+
+    const sqlQuery = `INSERT INTO users (user_id, name, sap_id, password, role) VALUES (?, ?, ?, ?, 'student')`;
+    
+    db.query(sqlQuery, [rollNo, name, sapId, defaultPassword], (err, result) => {
+        if (err) {
+            console.error(err);
+            // If the Roll No or SAP ID already exists, MySQL throws an error
+            return res.status(400).json({ success: false, message: "Error: Roll No or SAP ID might already exist." });
+        }
+        res.json({ success: true, message: "Student added successfully to the database!" });
+    });
+});
+
 // 4. Start the Server
 const PORT = 3000;
 app.listen(PORT, () => {

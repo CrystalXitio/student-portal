@@ -49,7 +49,7 @@
                                 <th style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="student-table-body">
                             <tr>
                                 <td>N005</td>
                                 <td>Agrim Arya</td>
@@ -72,17 +72,26 @@
         <div class="modal-content">
             <span class="close-modal" onclick="document.getElementById('crud-modal').style.display='none'">&times;</span>
             <h3 id="crud-title">Add/Edit Details</h3>
-            <form onsubmit="event.preventDefault(); alert('Student details saved successfully!'); document.getElementById('crud-modal').style.display='none';">
-                <div class="input-group"><label>Full Name</label><input type="text" required></div>
-                <div class="input-group"><label>Roll Number</label><input type="text" required></div>
-                <div class="input-group"><label>SAP ID</label><input type="number" required></div>
+            
+            <form id="add-student-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="new-std-name" required>
+                </div>
+                <div class="input-group">
+                    <label>Roll Number</label>
+                    <input type="text" id="new-std-roll" required>
+                </div>
+                <div class="input-group">
+                    <label>SAP ID</label>
+                    <input type="number" id="new-std-sap" required>
+                </div>
                 <div class="input-group">
                     <label>Enrolled Course</label>
-                    <select required>
+                    <select id="new-std-course" required>
                         <option value="">Select Course...</option>
-                        <option value="mbatech">MBA Tech - Comp Engg</option>
-                        <option value="btech">B.Tech - IT</option>
-                    </select>
+                        <option value="mbatech_ce">MBA Tech - Comp Engg</option>
+                        </select>
                 </div>
                 <button type="submit" class="submit-btn">Enter / Save</button>
             </form>
@@ -95,6 +104,43 @@
             document.getElementById('crud-title').innerText = title;
             document.getElementById('crud-modal').style.display = 'flex';
         }
+
+        // Handle Add Student Form Submission
+        document.getElementById('add-student-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent page reload
+
+            // Gather data from inputs
+            const studentData = {
+                name: document.getElementById('new-std-name').value,
+                rollNo: document.getElementById('new-std-roll').value,
+                sapId: document.getElementById('new-std-sap').value,
+                courseId: document.getElementById('new-std-course').value
+            };
+
+            try {
+                // Send POST request to our Node Server
+                const response = await fetch('http://localhost:3000/api/admin/add-student', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(studentData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    document.getElementById('crud-modal').style.display = 'none';
+                    document.getElementById('add-student-form').reset();
+                    // Refresh the page so the admin can verify the change in numbers on the dashboard
+                    window.location.reload(); 
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert("Failed to connect to the server.");
+            }
+        });
     </script>
 </body>
 </html>
