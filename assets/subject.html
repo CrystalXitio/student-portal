@@ -9,20 +9,17 @@
 </head>
 <body>
     <script>
-        // Apply theme immediately to prevent flashing
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
     </script>
     
     <div id="side-menu" class="side-menu">
         <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
         <a href="dashboard.html">Home</a>
-        <a href="#">Attendance Tracker</a>
-        <a href="#">Exam Results</a>
-        <a href="#">Academic Calendar</a>
-        <a href="#">Fee Details</a>
-        <a href="#">Help Desk</a>
+        <a href="attendance.html">Attendance Tracker</a>
+        <a href="results.html">Exam Results</a>
+        <a href="calendar.html">Academic Calendar</a>
+        <a href="fees.html">Fee Details</a>
+        <a href="helpdesk.html">Help Desk</a>
     </div>
 
     <div id="main-content">
@@ -35,7 +32,6 @@
             <h1 class="portal-title"></h1> 
             <div class="header-right">
                 <div class="top-icons">
-                    
                     <div class="dropdown-container">
                         <span class="icon" title="Notifications" onclick="toggleDropdown('notif-dropdown')">&#128276;</span>
                         <div class="dropdown-menu" id="notif-dropdown">
@@ -43,14 +39,6 @@
                             <div class="notif-item">
                                 <div class="notif-time">12 Apr<br><span>09:15</span></div>
                                 <div class="notif-text">New Assignment in Computer Architecture</div>
-                            </div>
-                            <div class="notif-item">
-                                <div class="notif-time">11 Apr<br><span>14:30</span></div>
-                                <div class="notif-text">Fees due tomorrow</div>
-                            </div>
-                            <div class="notif-item">
-                                <div class="notif-time">10 Apr<br><span>16:45</span></div>
-                                <div class="notif-text">CVT Lab attendance updated</div>
                             </div>
                         </div>
                     </div>
@@ -94,40 +82,6 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <h2 id="assignment-heading">Assignments</h2>
-                    <div class="controls">
-                        <button class="filter-btn active">Upcoming</button>
-                        <button class="filter-btn">Completed</button>
-                        <button class="filter-btn">Past Due</button>
-                    </div>
-                    <div class="scrollable-box">
-                        <div class="list-item">
-                            <div>
-                                <strong id="assignment-name">Sample Assignment 1</strong>
-                                <p id="assignment-desc">Complete the theory questions.</p>
-                            </div>
-                            <span class="badge upcoming" id="assignment-due">Due: Tomorrow</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>Learning Resources</h2>
-                    <div class="controls">
-                        <input type="text" class="search-input" placeholder="Search resources...">
-                        <select class="sort-select">
-                            <option value="newest">Newest First</option>
-                            <option value="oldest">Oldest First</option>
-                            <option value="az">A - Z</option>
-                        </select>
-                    </div>
-                    <div class="scrollable-box" id="resources-box">
-                        <div class="list-item"><strong id="resource-1">Syllabus.pdf</strong></div>
-                        <div class="list-item" id="resource-box-2"><strong id="resource-2">Chapter 1 Notes.pdf</strong></div>
-                    </div>
-                </div>
-
                 <div class="card teams-card">
                     <h2>Teams Environment</h2>
                     <div class="teams-placeholder">
@@ -155,19 +109,8 @@
         </div>
     </div>
 
+    <script src="../js/app.js"></script>
     <script>
-        function toggleMenu() {
-            var menu = document.getElementById("side-menu");
-            var mainContent = document.getElementById("main-content");
-            if (menu.style.width === "250px") {
-                menu.style.width = "0";
-                mainContent.style.marginLeft = "0";
-            } else {
-                menu.style.width = "250px";
-                mainContent.style.marginLeft = "250px";
-            }
-        }
-
         const urlParams = new URLSearchParams(window.location.search);
         const subjectId = urlParams.get('id') || 'Unknown Subject';
 
@@ -198,64 +141,7 @@
             document.getElementById("stat-missed").innerText = "2";
             document.getElementById("stat-total").innerText = "12";
             document.getElementById("stat-percent").innerText = "83%";
-            document.getElementById("assignment-heading").innerText = "Lab Assignments";
-            document.getElementById("assignment-name").innerText = "Sample Lab Execution";
-            document.getElementById("assignment-desc").innerText = "Submit your code and output screenshots.";
-            document.getElementById("assignment-due").innerText = "Due: Friday";
-            document.getElementById("resource-1").innerText = "Lab Manual.pdf";
-            document.getElementById("resource-box-2").style.display = "none"; 
         } 
-        
-        function toggleDropdown(dropdownId) {
-            var dropdown = document.getElementById(dropdownId);
-            var allDropdowns = document.getElementsByClassName("dropdown-menu");
-            
-            for (var i = 0; i < allDropdowns.length; i++) {
-                if (allDropdowns[i].id !== dropdownId) {
-                    allDropdowns[i].style.display = "none";
-                }
-            }
-            if (dropdown.style.display === "block") {
-                dropdown.style.display = "none";
-            } else {
-                dropdown.style.display = "block";
-            }
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.icon')) {
-                var dropdowns = document.getElementsByClassName("dropdown-menu");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.style.display === 'block') {
-                        if (!openDropdown.contains(event.target)) {
-                            openDropdown.style.display = 'none';
-                        }
-                    }
-                }
-            }
-            if (event.target.matches('.modal-overlay')) {
-                closePasswordModal();
-            }
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        function openPasswordModal() {
-            document.getElementById('password-modal').style.display = 'flex';
-            document.getElementById('settings-dropdown').style.display = 'none';
-        }
-
-        function closePasswordModal() {
-            document.getElementById('password-modal').style.display = 'none';
-        }
     </script>
 </body>
 </html>
