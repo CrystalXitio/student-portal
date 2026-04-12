@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style-dashboard.css">
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div id="side-menu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <a href="admin-dashboard.html" class="active">Dashboard</a>
+        <a href="#">User Management</a>
+        <a href="#">Broadcast Announcements</a>
+        <a href="#">Fee Overviews</a>
+        <a href="#">Support Tickets (12)</a>
+    </div>
+
+    <div id="main-content">
+        <header class="top-header">
+            <div class="header-left"><span class="hamburger-icon" onclick="toggleMenu()">&#9776;</span><img src="logo.png" alt="Logo" class="logo"></div>
+            <h1 class="portal-title">Administrator Portal</h1>
+            <div class="header-right">
+                <div class="top-icons">
+                    <div class="profile-icon" style="background-color: #d35400;">ADM</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="section-title">
+                <h2>College Overview</h2>
+                <p>System statistics and quick management links.</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="card" style="text-align: center; padding: 20px;">
+                    <h3 style="margin-top:0; color:#777;">Total Students</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #2c3e50;">1,240</div>
+                </div>
+                <div class="card" style="text-align: center; padding: 20px;">
+                    <h3 style="margin-top:0; color:#777;">Total Faculty</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #2c3e50;">85</div>
+                </div>
+                <div class="card" style="text-align: center; padding: 20px;">
+                    <h3 style="margin-top:0; color:#777;">Active Classes</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #2c3e50;">42</div>
+                </div>
+                <div class="card" style="text-align: center; padding: 20px; border-bottom: 4px solid #e74c3c;">
+                    <h3 style="margin-top:0; color:#777;">Pending Tickets</h3>
+                    <div style="font-size: 36px; font-weight: bold; color: #e74c3c;">12</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 10px;">
+                <h2>Recent Grievance Tickets</h2>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Issue Category</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TKT-001</td>
+                                <td>Agrim Arya (N005)</td>
+                                <td>Student</td>
+                                <td>Portal Access Issue</td>
+                                <td><span class="status-danger">Open</span></td>
+                                <td><button style="padding: 5px 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Resolve</button></td>
+                            </tr>
+                            <tr>
+                                <td>#TKT-002</td>
+                                <td>Prof. MKA</td>
+                                <td>Faculty</td>
+                                <td>Cannot upload grades</td>
+                                <td><span class="status-warn">In Progress</span></td>
+                                <td><button style="padding: 5px 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer;">Resolve</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>
