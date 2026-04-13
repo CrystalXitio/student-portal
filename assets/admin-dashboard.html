@@ -50,27 +50,27 @@
             <div class="info-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Total Students</h3>
-                    <div id="stat-students" style="font-size: 36px; font-weight: bold; color: #0056b3;">...</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">1,240</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Total Teachers</h3>
-                    <div id="stat-teachers" style="font-size: 36px; font-weight: bold; color: #0056b3;">...</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">85</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Total Courses</h3>
-                    <div id="stat-courses" style="font-size: 36px; font-weight: bold; color: #0056b3;">...</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">12</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Total Subjects</h3>
-                    <div id="stat-subjects" style="font-size: 36px; font-weight: bold; color: #0056b3;">...</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">64</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px;">
                     <h3 style="margin-top:0; color:#777;">Active Classes</h3>
-                    <div id="stat-classes" style="font-size: 36px; font-weight: bold; color: #0056b3;">...</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #0056b3;">42</div>
                 </div>
                 <div class="card" style="text-align: center; padding: 20px; border-bottom: 4px solid #e74c3c;">
                     <h3 style="margin-top:0; color:#777;">Pending Tickets</h3>
-                    <div id="stat-tickets" style="font-size: 36px; font-weight: bold; color: #e74c3c;">...</div>
+                    <div style="font-size: 36px; font-weight: bold; color: #e74c3c;">12</div>
                 </div>
             </div>
         </main>
@@ -91,27 +91,5 @@
     </div>
 
     <script src="../js/app.js"></script>
-    <script>
-        // Fetch dashboard statistics when the page loads
-        window.onload = async function() {
-            try {
-                const response = await fetch('http://localhost:3000/api/admin/stats');
-                const data = await response.json();
-
-                if(data.success) {
-                    document.getElementById('stat-students').innerText = data.data.total_students;
-                    document.getElementById('stat-teachers').innerText = data.data.total_teachers;
-                    document.getElementById('stat-courses').innerText = data.data.total_courses;
-                    document.getElementById('stat-subjects').innerText = data.data.total_subjects;
-                    document.getElementById('stat-classes').innerText = data.data.total_classes;
-                    document.getElementById('stat-tickets').innerText = data.data.pending_tickets;
-                }
-            } catch (error) {
-                console.error("Error fetching stats:", error);
-                // Fallback text if server is off
-                document.getElementById('stat-students').innerText = "Error";
-            }
-        };
-    </script>
 </body>
 </html>
