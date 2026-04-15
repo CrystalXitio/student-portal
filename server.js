@@ -1,180 +1,29 @@
-require('dotenv').config(); // Loads the secret MONGO_URI from your .env file
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
+const db = require('./db');
+const initializeDatabase = require('./init_db');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ==========================================
-// 1. DATABASE CONNECTION
-// ==========================================
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('Successfully connected to MongoDB Atlas!'))
-    .catch((err) => console.error('MongoDB connection error:', err));
+// Initialize database schema and data automatically on startup
+initializeDatabase().catch(err => {
+    console.error("Failed to initialize database securely:", err);
+});
 
 // ==========================================
-// 2. MONGOOSE SCHEMAS (The Blueprints)
-// ==========================================
-
-// --- USERS SCHEMA ---
-const userSchema = new mongoose.Schema({
-    userId: { type: String, required: true, unique: true }, // e.g., 'N005' or 'ADM-001'
-    name: { type: String, required: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
-    sapId: { type: String }, // Optional for admins
-    profile: { // For the profile pages later
-        email: String,
-        phone: String,
-        bloodGroup: String,
-        address: String,
-        profilePictureUrl: String
-    }
-});
-const User = mongoose.model('User', userSchema);
-
-// --- COURSES SCHEMA ---
-const courseSchema = new mongoose.Schema({
-    courseId: { type: String, required: true, unique: true }, // e.g., 'mbatech_ce'
-    courseName: { type: String, required: true },
-    durationYears: Number,
-    totalCredits: Number
-});
-const Course = mongoose.model('Course', courseSchema);
-
-// --- SUBJECTS SCHEMA ---
-const subjectSchema = new mongoose.Schema({
-    subjectCode: { type: String, required: true, unique: true },
-    subjectName: { type: String, required: true },
-    courseId: { type: String, required: true }, // Links to Course
-    semester: Number
-});
-const Subject = mongoose.model('Subject', subjectSchema);
-
-// --- CLASSES SCHEMA ---
-const classSchema = new mongoose.Schema({
-    classId: { type: String, required: true, unique: true },
-    className: { type: String, required: true },
-    subjectId: { type: String, required: true },
-    teacherId: { type: String, required: true },
-    type: { type: String, enum: ['Theory', 'Lab', 'Tutorial'] },
-    schedule: [{
-        dayOfWeek: String,
-        startTime: String,
-        endTime: String,
-        roomNumber: String
-    }]
-});
-const Class = mongoose.model('Class', classSchema);
-
-// --- ENROLLMENTS & ACADEMIC RECORDS SCHEMA ---
-const enrollmentSchema = new mongoose.Schema({
-    studentId: { type: String, required: true },
-    classId: { type: String, required: true },
-    attendance: {
-        totalLectures: { type: Number, default: 0 },
-        attendedLectures: { type: Number, default: 0 }
-    },
-    marks: {
-        ica1: { type: Number, default: 0 },
-        ica2: { type: Number, default: 0 },
-        endSem: { type: Number, default: 0 }
-    }
-});
-const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
-
-// --- FEES SCHEMA ---
-const feeSchema = new mongoose.Schema({
-    receiptNo: { type: String, required: true, unique: true },
-    studentId: { type: String, required: true },
-    academicYear: String,
-    amountDue: Number,
-    amountPaid: { type: Number, default: 0 },
-    status: { type: String, enum: ['Paid', 'Pending', 'Overdue'], default: 'Pending' },
-    dueDate: Date
-});
-const Fee = mongoose.model('Fee', feeSchema);
-
-// --- ANNOUNCEMENTS SCHEMA ---
-const announcementSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    message: { type: String, required: true },
-    authorId: String,
-    targetAudience: String,
-    datePosted: { type: Date, default: Date.now },
-    expiresOn: Date
-});
-const Announcement = mongoose.model('Announcement', announcementSchema);
-
-// --- TICKETS SCHEMA ---
-const ticketSchema = new mongoose.Schema({
-    submitterId: { type: String, required: true },
-    category: { type: String, enum: ['IT Issue', 'Administration', 'Academic'] },
-    subject: String,
-    message: String,
-    status: { type: String, enum: ['Open', 'In Progress', 'Resolved'], default: 'Open' },
-    responseNotes: String,
-    dateSubmitted: { type: Date, default: Date.now }
-});
-const Ticket = mongoose.model('Ticket', ticketSchema);
-
-
-// ==========================================
-// 3. DATABASE SEEDING (Test Accounts & Base Data)
-// ==========================================
-const seedDatabase = async () => {
-    try {
-        // Seed Users
-        const adminExists = await User.findOne({ userId: 'ADM-001' });
-        if (!adminExists) {
-            await User.create([
-                { userId: 'ADM-001', name: 'System Admin', password: 'admin123', role: 'admin' },
-                { userId: 'FAC-1029', name: 'Prof. MKA', password: 'prof123', role: 'teacher' },
-                { userId: 'N005', name: 'Agrim Arya', password: 'student123', role: 'student', sapId: '70472400005' }
-            ]);
-            console.log('Test users successfully injected!');
-        }
-
-        // Seed Courses
-        const courseExists = await Course.findOne({ courseId: 'mbatech_ce' });
-        if (!courseExists) {
-            await Course.create({
-                courseId: 'mbatech_ce',
-                courseName: 'MBA Tech in Computer Engineering',
-                durationYears: 5,
-                totalCredits: 220
-            });
-            console.log('Base courses successfully injected!');
-        }
-
-        // Seed Subjects
-        const subjectExists = await Subject.findOne({ subjectCode: 'CE-DBMS-01' });
-        if (!subjectExists) {
-            await Subject.create([
-                { subjectCode: 'CE-DBMS-01', subjectName: 'Database Management Systems', courseId: 'mbatech_ce', semester: 4 },
-                { subjectCode: 'CE-DSA-02', subjectName: 'Data Structures and Algorithms', courseId: 'mbatech_ce', semester: 3 }
-            ]);
-            console.log('Base subjects successfully injected!');
-        }
-    } catch (error) {
-        console.error('Error seeding database:', error);
-    }
-};
-seedDatabase();
-
-// ==========================================
-// 4. API ENDPOINTS
+// 1. AUTH & DASHBOARD METRICS
 // ==========================================
 
 // --- LOGIN SYSTEM ---
 app.post('/api/login', async (req, res) => {
     try {
         const { userId, password } = req.body;
-        const user = await User.findOne({ userId: userId, password: password });
+        const [rows] = await db.query('SELECT userId, role, name FROM users WHERE userId = ? AND password = ?', [userId, password]);
         
-        if (user) {
+        if (rows.length > 0) {
+            const user = rows[0];
             res.json({ success: true, userId: user.userId, role: user.role, name: user.name });
         } else {
             res.status(401).json({ success: false, message: "Invalid ID or Password!" });
@@ -188,16 +37,21 @@ app.post('/api/login', async (req, res) => {
 // --- ADMIN: GET DASHBOARD STATS ---
 app.get('/api/admin/stats', async (req, res) => {
     try {
-        const total_students = await User.countDocuments({ role: 'student' });
-        const total_teachers = await User.countDocuments({ role: 'teacher' });
-        const total_courses = await Course.countDocuments();
-        const total_subjects = await Subject.countDocuments();
-        const total_classes = await Class.countDocuments();
-        const pending_tickets = await Ticket.countDocuments({ status: 'Open' });
+        const [[studentCount]] = await db.query("SELECT COUNT(*) AS count FROM users WHERE role = 'student'");
+        const [[teacherCount]] = await db.query("SELECT COUNT(*) AS count FROM users WHERE role = 'teacher'");
+        const [[courseCount]] = await db.query("SELECT COUNT(*) AS count FROM courses");
+        const [[subjectCount]] = await db.query("SELECT COUNT(*) AS count FROM subjects");
         
         res.json({ 
             success: true, 
-            data: { total_students, total_teachers, total_courses, total_subjects, total_classes, pending_tickets }
+            data: { 
+                total_students: studentCount.count,
+                total_teachers: teacherCount.count, 
+                total_courses: courseCount.count, 
+                total_subjects: subjectCount.count, 
+                total_classes: 0, 
+                pending_tickets: 0 
+            }
         });
     } catch (error) {
         console.error("Stats error:", error);
@@ -205,111 +59,154 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// --- ADMIN: ADD STUDENT ---
-app.post('/api/admin/add-student', async (req, res) => {
-    try {
-        const { name, rollNo, sapId, courseId } = req.body;
+// ==========================================
+// 2. TEACHER FEATURES (ICA & ATTENDANCE)
+// ==========================================
 
-        const existingUser = await User.findOne({ $or: [{ userId: rollNo }, { sapId: sapId }] });
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: "Error: Roll No or SAP ID already exists!" });
+// --- TEACHER: SCORE UPLOAD ---
+// Accepts: { subjectCode: '...', records: [{studentId: '...', ica1: 20, ica2: 24}, ...] }
+app.post('/api/teacher/ica', async (req, res) => {
+    try {
+        const { subjectCode, records } = req.body;
+        
+        if (!subjectCode || !records || !Array.isArray(records)) {
+            return res.status(400).json({ success: false, message: "Invalid payload format." });
         }
 
-        const newStudent = new User({
-            userId: rollNo,
-            name: name,
-            password: 'password123', // Standard default password
-            sapId: sapId,
-            role: 'student'
-        });
+        // We use INSERT ... ON DUPLICATE KEY UPDATE to allow partial edits/overrides safely
+        const connection = await db.getConnection();
+        await connection.beginTransaction();
 
-        await newStudent.save();
-        res.json({ success: true, message: "Student added successfully!" });
-
-    } catch (error) {
-        console.error("Add student error:", error);
-        res.status(500).json({ success: false, message: "Server error occurred." });
-    }
-});
-
-// --- ADMIN: GET ALL COURSES ---
-app.get('/api/admin/courses', async (req, res) => {
-    try {
-        const courses = await Course.find({});
-        res.json({ success: true, data: courses });
-    } catch (error) {
-        console.error("Fetch courses error:", error);
-        res.status(500).json({ success: false, message: "Failed to fetch courses from database." });
-    }
-});
-
-// --- ADMIN: ADD NEW COURSE ---
-app.post('/api/admin/courses', async (req, res) => {
-    try {
-        const { courseId, courseName, durationYears, totalCredits } = req.body;
-
-        const existingCourse = await Course.findOne({ courseId: courseId });
-        if (existingCourse) {
-            return res.status(400).json({ success: false, message: "Error: Course ID already exists!" });
+        try {
+            for (const record of records) {
+                await connection.query(
+                    `INSERT INTO ica_records (studentId, subjectCode, ica1, ica2) 
+                     VALUES (?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE ica1 = VALUES(ica1), ica2 = VALUES(ica2)`,
+                    [record.studentId, subjectCode, record.ica1 || 0, record.ica2 || 0]
+                );
+            }
+            await connection.commit();
+            res.json({ success: true, message: "ICA Marks securely saved to MySQL!" });
+        } catch (trxErr) {
+            await connection.rollback();
+            throw trxErr;
+        } finally {
+            connection.release();
         }
 
-        const newCourse = new Course({
-            courseId: courseId,
-            courseName: courseName,
-            durationYears: durationYears,
-            totalCredits: totalCredits
-        });
-
-        await newCourse.save();
-        res.json({ success: true, message: "Course added successfully to the Cloud Database!" });
-
     } catch (error) {
-        console.error("Add course error:", error);
-        res.status(500).json({ success: false, message: "Server error occurred." });
+        console.error("ICA Upload Error:", error);
+        res.status(500).json({ success: false, message: "Database failure occurred while saving marks." });
     }
 });
 
-// --- ADMIN: GET ALL SUBJECTS ---
-app.get('/api/admin/subjects', async (req, res) => {
+// --- TEACHER: ATTENDANCE UPLOAD ---
+// Accepts: { subjectCode: '...', date: 'YYYY-MM-DD', records: [{studentId: '...', status: 'present'}, ...] }
+app.post('/api/teacher/attendance', async (req, res) => {
     try {
-        const subjects = await Subject.find({});
-        res.json({ success: true, data: subjects });
-    } catch (error) {
-        console.error("Fetch subjects error:", error);
-        res.status(500).json({ success: false, message: "Failed to fetch subjects from database." });
-    }
-});
-
-// --- ADMIN: ADD NEW SUBJECT ---
-app.post('/api/admin/subjects', async (req, res) => {
-    try {
-        const { subjectCode, subjectName, courseId, semester } = req.body;
-
-        const existingSubject = await Subject.findOne({ subjectCode: subjectCode });
-        if (existingSubject) {
-            return res.status(400).json({ success: false, message: "Error: Subject Code already exists!" });
+        const { subjectCode, date, records } = req.body;
+        
+        if (!subjectCode || !date || !records || !Array.isArray(records)) {
+            return res.status(400).json({ success: false, message: "Invalid payload format." });
         }
 
-        const newSubject = new Subject({
-            subjectCode: subjectCode,
-            subjectName: subjectName,
-            courseId: courseId,
-            semester: semester
-        });
+        const connection = await db.getConnection();
+        await connection.beginTransaction();
 
-        await newSubject.save();
-        res.json({ success: true, message: "Subject added successfully to the Cloud Database!" });
+        try {
+            for (const record of records) {
+                await connection.query(
+                    `INSERT INTO attendance (studentId, subjectCode, date, status) 
+                     VALUES (?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE status = VALUES(status)`,
+                    [record.studentId, subjectCode, date, record.status]
+                );
+            }
+            await connection.commit();
+            res.json({ success: true, message: "Attendance securely saved to MySQL!" });
+        } catch (trxErr) {
+            await connection.rollback();
+            throw trxErr;
+        } finally {
+            connection.release();
+        }
 
     } catch (error) {
-        console.error("Add subject error:", error);
-        res.status(500).json({ success: false, message: "Server error occurred." });
+        console.error("Attendance Upload Error:", error);
+        res.status(500).json({ success: false, message: "Database failure occurred while saving attendance." });
+    }
+});
+
+
+// ==========================================
+// 3. STUDENT FEATURES (ICA VISIBILITY)
+// ==========================================
+
+// --- STUDENT: GET ICA RESULTS ---
+app.get('/api/student/ica', async (req, res) => {
+    try {
+        const studentId = req.query.studentId;
+        if (!studentId) {
+            return res.status(400).json({ success: false, message: "Missing studentId param." });
+        }
+
+        const [rows] = await db.query(
+            `SELECT i.subjectCode, s.subjectName, i.ica1, i.ica2, i.last_updated
+             FROM ica_records i 
+             JOIN subjects s ON i.subjectCode = s.subjectCode 
+             WHERE i.studentId = ?`, 
+            [studentId]
+        );
+
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.error("Fetch Student ICA error:", error);
+        res.status(500).json({ success: false, message: "Database mapping failed." });
+    }
+});
+
+
+// --- STUDENT: GET ATTENDANCE ---
+app.get('/api/student/attendance', async (req, res) => {
+    try {
+        const studentId = req.query.studentId;
+        if (!studentId) return res.status(400).json({ success: false, message: "Missing studentId param." });
+
+        const [rows] = await db.query(
+            `SELECT subjectCode, 
+                    COUNT(*) as total, 
+                    SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as attended 
+             FROM attendance 
+             WHERE studentId = ? 
+             GROUP BY subjectCode`, 
+            [studentId]
+        );
+
+        const [subjectRows] = await db.query(`SELECT subjectCode, subjectName FROM subjects`);
+        
+        const finalData = rows.map(r => {
+            const sub = subjectRows.find(s => s.subjectCode === r.subjectCode) || {subjectName: 'Unknown Subject'};
+            return {
+                code: r.subjectCode,
+                name: sub.subjectName,
+                type: 'Theory', // Default placeholder
+                total: r.total,
+                attended: r.attended
+            };
+        });
+
+        res.json({ success: true, data: finalData });
+    } catch (error) {
+        console.error("Fetch Student Attendance error:", error);
+        res.status(500).json({ success: false, message: "Server error." });
     }
 });
 
 // ==========================================
-// 5. START SERVER
+// 4. START SERVER
 // ==========================================
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running securely on http://localhost:${PORT}`);
 });

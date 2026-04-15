@@ -51,9 +51,9 @@
                 <div class="card">
                     <h2>Class Actions</h2>
                     <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <button class="submit-btn" style="margin-top:0; background-color: #27ae60;" onclick="window.location.href='update-marks.html'">Update ICA Marks</button>
+                        <button class="submit-btn" style="margin-top:0; background-color: #27ae60;" onclick="window.location.href='update-marks.html?id=' + encodeURIComponent(subjectId)">Update ICA Marks</button>
                         <button class="submit-btn" style="margin-top:0;">Upload New Assignment</button>
-                        <button class="submit-btn" style="margin-top:0; background-color: #e67e22;">Mark Today's Attendance</button>
+                        <button class="submit-btn" style="margin-top:0; background-color: #e67e22;" onclick="window.location.href='update-attendance.html?id=' + encodeURIComponent(subjectId)">Mark Today's Attendance</button>
                     </div>
                 </div>
 

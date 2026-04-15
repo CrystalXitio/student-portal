@@ -24,6 +24,8 @@
         </p>
        
         <form id="login-form">
+            <div id="error-message" style="color: red; margin-bottom: 15px; font-size: 14px; display: none;"></div>
+
             <div class="input-group">
                 <label for="username">Email / SAP ID</label>
                 <input type="text" id="username" name="username" required>
@@ -39,18 +41,49 @@
     </div>
 
     <script>
-        // Simple routing logic based on username
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        // Authenticate with the Node.js API
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent default form submission
            
-            const username = document.getElementById('username').value.toLowerCase();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            
+            // Reset previous errors
+            errorDiv.style.display = 'none';
            
-            if (username.includes('admin')) {
-                window.location.href = 'assets/admin-dashboard.html';
-            } else if (username.includes('prof') || username.includes('teacher')) {
-                window.location.href = 'assets/teacher-dashboard.html';
-            } else {
-                window.location.href = 'assets/dashboard.html';
+            try {
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: username, password: password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Save user information for the dashboard to use
+                    localStorage.setItem('userId', data.userId);
+                    localStorage.setItem('userRole', data.role);
+                    localStorage.setItem('userName', data.name);
+                    
+                    // Route to correct dashboard based on role
+                    if (data.role === 'admin') {
+                        window.location.href = 'assets/admin-dashboard.html';
+                    } else if (data.role === 'teacher') {
+                        window.location.href = 'assets/teacher-dashboard.html';
+                    } else {
+                        window.location.href = 'assets/dashboard.html';
+                    }
+                } else {
+                    // Show error message from backend
+                    errorDiv.innerText = data.message || "Invalid credentials.";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                errorDiv.innerText = "Error connecting to server. Is it running?";
+                errorDiv.style.display = 'block';
             }
         });
     </script>

@@ -54,37 +54,46 @@
 
     <script src="../js/app.js"></script>
     <script>
-        const attendanceData = [
-            { code: 'COA', name: 'Computer Architecture', type: 'Theory', total: 30, attended: 24 },
-            { code: 'DBMS', name: 'Database Management', type: 'Theory', total: 28, attended: 25 },
-            { code: 'DBMS-D', name: 'Database Management Lab', type: 'Lab', total: 12, attended: 12 },
-            { code: 'CVT', name: 'Complex Variables', type: 'Theory', total: 30, attended: 24 },
-            { code: 'CVT-D', name: 'Complex Variables Lab', type: 'Lab', total: 12, attended: 10 },
-            { code: 'WP', name: 'Web Programming', type: 'Theory', total: 25, attended: 20 },
-            { code: 'DAA', name: 'Design of Algorithms', type: 'Theory', total: 32, attended: 30 },
-            { code: 'MAE', name: 'Management & Econ', type: 'Theory', total: 20, attended: 15 }
-        ];
-
-        const tbody = document.getElementById('attendance-body');
-        attendanceData.forEach(sub => {
-            const missed = sub.total - sub.attended;
-            const percent = Math.round((sub.attended / sub.total) * 100);
-            const statusClass = percent >= 80 ? 'status-good' : (percent >= 75 ? 'status-warn' : 'status-danger');
-            const statusText = percent >= 80 ? 'Good' : (percent >= 75 ? 'Warning' : 'Critical');
+        async function fetchAttendance() {
+            const studentId = localStorage.getItem('userId') || 'N005';
+            const tbody = document.getElementById('attendance-body');
             
-            tbody.innerHTML += `
-                <tr>
-                    <td><strong>${sub.code}</strong></td>
-                    <td>${sub.name}</td>
-                    <td>${sub.type}</td>
-                    <td>${sub.total}</td>
-                    <td>${sub.attended}</td>
-                    <td>${missed}</td>
-                    <td><strong>${percent}%</strong></td>
-                    <td class="${statusClass}">${statusText}</td>
-                </tr>
-            `;
-        });
+            try {
+                tbody.innerHTML = '<tr><td colspan="8">Fetching attendance from MySQL...</td></tr>';
+                const res = await fetch(`http://localhost:3000/api/student/attendance?studentId=${studentId}`);
+                const data = await res.json();
+                
+                tbody.innerHTML = '';
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    data.data.forEach(sub => {
+                        const missed = sub.total - sub.attended;
+                        const percent = sub.total > 0 ? Math.round((sub.attended / sub.total) * 100) : 0;
+                        const statusClass = percent >= 80 ? 'status-good' : (percent >= 75 ? 'status-warn' : 'status-danger');
+                        const statusText = percent >= 80 ? 'Good' : (percent >= 75 ? 'Warning' : 'Critical');
+                        
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${sub.code}</strong></td>
+                                <td>${sub.name}</td>
+                                <td>${sub.type}</td>
+                                <td>${sub.total}</td>
+                                <td>${sub.attended}</td>
+                                <td>${missed}</td>
+                                <td><strong>${percent}%</strong></td>
+                                <td class="${statusClass}">${statusText}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8">No attendance records found yet.</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="8" style="color:red">Failed to connect to backend server.</td></tr>';
+            }
+        }
+        window.onload = fetchAttendance;
     </script>
 </body>
 </html>

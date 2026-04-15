@@ -74,11 +74,62 @@
                     </table>
                 </div>
                 <div style="text-align: right; margin-top: 20px;">
-                    <button class="submit-btn" style="width: auto; padding: 10px 30px; background-color: #27ae60;" onclick="alert('Marks Saved Successfully!'); window.history.back();">Save All Marks</button>
+                    <button class="submit-btn" id="saveMarksBtn" style="width: auto; padding: 10px 30px; background-color: #27ae60;" onclick="saveMarks()">Save All Marks</button>
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        async function saveMarks() {
+            const btn = document.getElementById('saveMarksBtn');
+            btn.innerText = 'Saving...';
+            btn.disabled = true;
+
+            const rows = document.querySelectorAll('tbody tr');
+            const records = [];
+
+            // Extract the subject code from the URL dynamically
+            const urlParams = new URLSearchParams(window.location.search);
+            const subjectCode = urlParams.get('id');
+            if (!subjectCode) {
+                alert("Subject missing! Please open this page directly from a class.");
+                return;
+            }
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const studentId = cells[0].innerText.trim();
+                const inputs = row.querySelectorAll('input[type="number"]');
+                const ica1 = parseInt(inputs[0].value) || 0;
+                const ica2 = parseInt(inputs[1].value) || 0;
+
+                records.push({ studentId, ica1, ica2 });
+            });
+
+            try {
+                const res = await fetch('http://localhost:3000/api/teacher/ica', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subjectCode, records })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    alert('Marks Saved Successfully to MySQL!');
+                    window.history.back();
+                } else {
+                    alert('Error saving marks: ' + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error! Is the Node server running?');
+            } finally {
+                btn.innerText = 'Save All Marks';
+                btn.disabled = false;
+            }
+        }
+    </script>
 
     <div id="password-modal" class="modal-overlay">
         <div class="modal-content">
