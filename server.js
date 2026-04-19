@@ -1,4 +1,4 @@
-require('dotenv').config(); // Loads the secret MONGO_URI from your .env file
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -7,25 +7,32 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ==========================================
-// 1. DATABASE CONNECTION
-// ==========================================
+/**
+ * ----------------------------------------------------------------------------
+ * Data Access Layer Initialization
+ * ----------------------------------------------------------------------------
+ * Establishes the primary connection pool to the remote document store.
+ */
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Successfully connected to MongoDB Atlas!'))
     .catch((err) => console.error('MongoDB connection error:', err));
 
-// ==========================================
-// 2. MONGOOSE SCHEMAS (The Blueprints)
-// ==========================================
+/**
+ * ----------------------------------------------------------------------------
+ * ODM Schema Definitions
+ * ----------------------------------------------------------------------------
+ */
 
-// --- USERS SCHEMA ---
+/**
+ * Access Control & Identity Schema
+ */
 const userSchema = new mongoose.Schema({
-    userId: { type: String, required: true, unique: true }, // e.g., 'N005' or 'ADM-001'
+    userId: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'teacher', 'admin'], required: true },
-    sapId: { type: String }, // Optional for admins
-    profile: { // For the profile pages later
+    sapId: { type: String },
+    profile: {
         email: String,
         phone: String,
         bloodGroup: String,
@@ -35,25 +42,31 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// --- COURSES SCHEMA ---
+/**
+ * Academic Program Nomenclature Schema
+ */
 const courseSchema = new mongoose.Schema({
-    courseId: { type: String, required: true, unique: true }, // e.g., 'mbatech_ce'
+    courseId: { type: String, required: true, unique: true },
     courseName: { type: String, required: true },
     durationYears: Number,
     totalCredits: Number
 });
 const Course = mongoose.model('Course', courseSchema);
 
-// --- SUBJECTS SCHEMA ---
+/**
+ * Curriculum Subject Schema
+ */
 const subjectSchema = new mongoose.Schema({
     subjectCode: { type: String, required: true, unique: true },
     subjectName: { type: String, required: true },
-    courseId: { type: String, required: true }, // Links to Course
+    courseId: { type: String, required: true },
     semester: Number
 });
 const Subject = mongoose.model('Subject', subjectSchema);
 
-// --- CLASSES SCHEMA ---
+/**
+ * Scheduling & Resource Allocation Schema
+ */
 const classSchema = new mongoose.Schema({
     classId: { type: String, required: true, unique: true },
     className: { type: String, required: true },
@@ -69,7 +82,9 @@ const classSchema = new mongoose.Schema({
 });
 const Class = mongoose.model('Class', classSchema);
 
-// --- ENROLLMENTS & ACADEMIC RECORDS SCHEMA ---
+/**
+ * Academic Analytics & Verification Schema
+ */
 const enrollmentSchema = new mongoose.Schema({
     studentId: { type: String, required: true },
     classId: { type: String, required: true },
@@ -85,7 +100,9 @@ const enrollmentSchema = new mongoose.Schema({
 });
 const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
 
-// --- FEES SCHEMA ---
+/**
+ * Institutional Finance Schema
+ */
 const feeSchema = new mongoose.Schema({
     receiptNo: { type: String, required: true, unique: true },
     studentId: { type: String, required: true },
@@ -97,7 +114,9 @@ const feeSchema = new mongoose.Schema({
 });
 const Fee = mongoose.model('Fee', feeSchema);
 
-// --- ANNOUNCEMENTS SCHEMA ---
+/**
+ * Administrative Bulletin Schema
+ */
 const announcementSchema = new mongoose.Schema({
     title: { type: String, required: true },
     message: { type: String, required: true },
@@ -108,7 +127,9 @@ const announcementSchema = new mongoose.Schema({
 });
 const Announcement = mongoose.model('Announcement', announcementSchema);
 
-// --- TICKETS SCHEMA ---
+/**
+ * Support Operations Tracking Schema
+ */
 const ticketSchema = new mongoose.Schema({
     submitterId: { type: String, required: true },
     category: { type: String, enum: ['IT Issue', 'Administration', 'Academic'] },
@@ -121,12 +142,18 @@ const ticketSchema = new mongoose.Schema({
 const Ticket = mongoose.model('Ticket', ticketSchema);
 
 
-// ==========================================
-// 3. DATABASE SEEDING (Test Accounts & Base Data)
-// ==========================================
+/**
+ * ----------------------------------------------------------------------------
+ * Initial System Bootstrapping
+ * ----------------------------------------------------------------------------
+ * Injects required base dataset if the environment is empty. 
+ * Facilitates safe development and rapid environment provisioning.
+ */
 const seedDatabase = async () => {
     try {
-        // Seed Users
+        /*
+         * Provision standard operational identities
+         */
         const adminExists = await User.findOne({ userId: 'ADM-001' });
         if (!adminExists) {
             await User.create([
@@ -137,7 +164,9 @@ const seedDatabase = async () => {
             console.log('Test users successfully injected!');
         }
 
-        // Seed Courses
+        /*
+         * Provision structural coursework parameters
+         */
         const courseExists = await Course.findOne({ courseId: 'mbatech_ce' });
         if (!courseExists) {
             await Course.create({
@@ -149,7 +178,9 @@ const seedDatabase = async () => {
             console.log('Base courses successfully injected!');
         }
 
-        // Seed Subjects
+        /*
+         * Provision domain-specific curricula
+         */
         const subjectExists = await Subject.findOne({ subjectCode: 'CE-DBMS-01' });
         if (!subjectExists) {
             await Subject.create([
@@ -164,11 +195,17 @@ const seedDatabase = async () => {
 };
 seedDatabase();
 
-// ==========================================
-// 4. API ENDPOINTS
-// ==========================================
+/**
+ * ----------------------------------------------------------------------------
+ * RESTful API Controller Routes
+ * ----------------------------------------------------------------------------
+ */
 
-// --- LOGIN SYSTEM ---
+/**
+ * @route POST /api/login
+ * @description Authenticates users standardly across all permission tiers.
+ * @access Public
+ */
 app.post('/api/login', async (req, res) => {
     try {
         const { userId, password } = req.body;
@@ -185,7 +222,11 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- ADMIN: GET DASHBOARD STATS ---
+/**
+ * @route GET /api/admin/stats
+ * @description Aggregates fundamental telemetry and usage metadata.
+ * @access Restricted (Admin)
+ */
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const total_students = await User.countDocuments({ role: 'student' });
@@ -205,7 +246,11 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// --- ADMIN: ADD STUDENT ---
+/**
+ * @route POST /api/admin/add-student
+ * @description Injects new student entities into the directory service.
+ * @access Restricted (Admin)
+ */
 app.post('/api/admin/add-student', async (req, res) => {
     try {
         const { name, rollNo, sapId, courseId } = req.body;
@@ -218,7 +263,7 @@ app.post('/api/admin/add-student', async (req, res) => {
         const newStudent = new User({
             userId: rollNo,
             name: name,
-            password: 'password123', // Standard default password
+            password: 'password123',
             sapId: sapId,
             role: 'student'
         });
@@ -232,7 +277,11 @@ app.post('/api/admin/add-student', async (req, res) => {
     }
 });
 
-// --- ADMIN: GET ALL COURSES ---
+/**
+ * @route GET /api/admin/courses
+ * @description Fetches all operational program mappings.
+ * @access Restricted (Admin)
+ */
 app.get('/api/admin/courses', async (req, res) => {
     try {
         const courses = await Course.find({});
@@ -243,7 +292,11 @@ app.get('/api/admin/courses', async (req, res) => {
     }
 });
 
-// --- ADMIN: ADD NEW COURSE ---
+/**
+ * @route POST /api/admin/courses
+ * @description Mutates directory state with novel coursework matrices.
+ * @access Restricted (Admin)
+ */
 app.post('/api/admin/courses', async (req, res) => {
     try {
         const { courseId, courseName, durationYears, totalCredits } = req.body;
@@ -269,7 +322,11 @@ app.post('/api/admin/courses', async (req, res) => {
     }
 });
 
-// --- ADMIN: GET ALL SUBJECTS ---
+/**
+ * @route GET /api/admin/subjects
+ * @description Exposes global list of curriculum subjects.
+ * @access Restricted (Admin)
+ */
 app.get('/api/admin/subjects', async (req, res) => {
     try {
         const subjects = await Subject.find({});
@@ -280,7 +337,11 @@ app.get('/api/admin/subjects', async (req, res) => {
     }
 });
 
-// --- ADMIN: ADD NEW SUBJECT ---
+/**
+ * @route POST /api/admin/subjects
+ * @description Commits new study units mapped to institutional programs.
+ * @access Restricted (Admin)
+ */
 app.post('/api/admin/subjects', async (req, res) => {
     try {
         const { subjectCode, subjectName, courseId, semester } = req.body;
@@ -306,9 +367,11 @@ app.post('/api/admin/subjects', async (req, res) => {
     }
 });
 
-// ==========================================
-// 5. START SERVER
-// ==========================================
+/**
+ * ----------------------------------------------------------------------------
+ * Server Initialization Process
+ * ----------------------------------------------------------------------------
+ */
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

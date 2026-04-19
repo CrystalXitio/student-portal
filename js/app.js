@@ -1,4 +1,10 @@
-// Universal App Scripts
+/**
+ * application.js / app.js
+ * Core application initialization and UI interaction handlers.
+ * 
+ * Provides global functionalities including side navigation toggling,
+ * dropdown menu management, modal dialog behaviors, and theme selection.
+ */
 function toggleMenu() {
     var menu = document.getElementById("side-menu");
     var mainContent = document.getElementById("main-content");
