@@ -7,25 +7,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/**
- * ----------------------------------------------------------------------------
- * Data Access Layer Initialization
- * ----------------------------------------------------------------------------
- * Establishes the primary connection pool to the remote document store.
- */
+// Connect to MongoDB Database
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Successfully connected to MongoDB Atlas!'))
     .catch((err) => console.error('MongoDB connection error:', err));
 
-/**
- * ----------------------------------------------------------------------------
- * ODM Schema Definitions
- * ----------------------------------------------------------------------------
- */
-
-/**
- * Access Control & Identity Schema
- */
+// Database Schemas
 const userSchema = new mongoose.Schema({
     userId: { type: String, required: true, unique: true },
     name: { type: String, required: true },
@@ -42,9 +29,7 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-/**
- * Academic Program Nomenclature Schema
- */
+
 const courseSchema = new mongoose.Schema({
     courseId: { type: String, required: true, unique: true },
     courseName: { type: String, required: true },
@@ -53,9 +38,7 @@ const courseSchema = new mongoose.Schema({
 });
 const Course = mongoose.model('Course', courseSchema);
 
-/**
- * Curriculum Subject Schema
- */
+
 const subjectSchema = new mongoose.Schema({
     subjectCode: { type: String, required: true, unique: true },
     subjectName: { type: String, required: true },
@@ -64,9 +47,7 @@ const subjectSchema = new mongoose.Schema({
 });
 const Subject = mongoose.model('Subject', subjectSchema);
 
-/**
- * Scheduling & Resource Allocation Schema
- */
+
 const classSchema = new mongoose.Schema({
     classId: { type: String, required: true, unique: true },
     className: { type: String, required: true },
@@ -82,9 +63,7 @@ const classSchema = new mongoose.Schema({
 });
 const Class = mongoose.model('Class', classSchema);
 
-/**
- * Academic Analytics & Verification Schema
- */
+
 const enrollmentSchema = new mongoose.Schema({
     studentId: { type: String, required: true },
     classId: { type: String, required: true },
@@ -100,9 +79,7 @@ const enrollmentSchema = new mongoose.Schema({
 });
 const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
 
-/**
- * Institutional Finance Schema
- */
+
 const feeSchema = new mongoose.Schema({
     receiptNo: { type: String, required: true, unique: true },
     studentId: { type: String, required: true },
@@ -114,9 +91,7 @@ const feeSchema = new mongoose.Schema({
 });
 const Fee = mongoose.model('Fee', feeSchema);
 
-/**
- * Administrative Bulletin Schema
- */
+
 const announcementSchema = new mongoose.Schema({
     title: { type: String, required: true },
     message: { type: String, required: true },
@@ -127,9 +102,7 @@ const announcementSchema = new mongoose.Schema({
 });
 const Announcement = mongoose.model('Announcement', announcementSchema);
 
-/**
- * Support Operations Tracking Schema
- */
+
 const ticketSchema = new mongoose.Schema({
     submitterId: { type: String, required: true },
     category: { type: String, enum: ['IT Issue', 'Administration', 'Academic'] },
@@ -142,18 +115,9 @@ const ticketSchema = new mongoose.Schema({
 const Ticket = mongoose.model('Ticket', ticketSchema);
 
 
-/**
- * ----------------------------------------------------------------------------
- * Initial System Bootstrapping
- * ----------------------------------------------------------------------------
- * Injects required base dataset if the environment is empty. 
- * Facilitates safe development and rapid environment provisioning.
- */
+// Seed developer database with initial data
 const seedDatabase = async () => {
     try {
-        /*
-         * Provision standard operational identities
-         */
         const adminExists = await User.findOne({ userId: 'ADM-001' });
         if (!adminExists) {
             await User.create([
@@ -164,9 +128,7 @@ const seedDatabase = async () => {
             console.log('Test users successfully injected!');
         }
 
-        /*
-         * Provision structural coursework parameters
-         */
+
         const courseExists = await Course.findOne({ courseId: 'mbatech_ce' });
         if (!courseExists) {
             await Course.create({
@@ -178,9 +140,7 @@ const seedDatabase = async () => {
             console.log('Base courses successfully injected!');
         }
 
-        /*
-         * Provision domain-specific curricula
-         */
+
         const subjectExists = await Subject.findOne({ subjectCode: 'CE-DBMS-01' });
         if (!subjectExists) {
             await Subject.create([
@@ -195,17 +155,9 @@ const seedDatabase = async () => {
 };
 seedDatabase();
 
-/**
- * ----------------------------------------------------------------------------
- * RESTful API Controller Routes
- * ----------------------------------------------------------------------------
- */
+// --- API Routes ---
 
-/**
- * @route POST /api/login
- * @description Authenticates users standardly across all permission tiers.
- * @access Public
- */
+// Login authentication
 app.post('/api/login', async (req, res) => {
     try {
         const { userId, password } = req.body;
@@ -222,11 +174,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-/**
- * @route GET /api/admin/stats
- * @description Aggregates fundamental telemetry and usage metadata.
- * @access Restricted (Admin)
- */
+// Admin: Get dashboard summary statistics
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const total_students = await User.countDocuments({ role: 'student' });
@@ -246,11 +194,7 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-/**
- * @route POST /api/admin/add-student
- * @description Injects new student entities into the directory service.
- * @access Restricted (Admin)
- */
+// Admin: Add new student record
 app.post('/api/admin/add-student', async (req, res) => {
     try {
         const { name, rollNo, sapId, courseId } = req.body;
@@ -277,11 +221,7 @@ app.post('/api/admin/add-student', async (req, res) => {
     }
 });
 
-/**
- * @route GET /api/admin/courses
- * @description Fetches all operational program mappings.
- * @access Restricted (Admin)
- */
+// Admin: Fetch all available programs (courses)
 app.get('/api/admin/courses', async (req, res) => {
     try {
         const courses = await Course.find({});
@@ -292,11 +232,7 @@ app.get('/api/admin/courses', async (req, res) => {
     }
 });
 
-/**
- * @route POST /api/admin/courses
- * @description Mutates directory state with novel coursework matrices.
- * @access Restricted (Admin)
- */
+// Admin: Add a new program (course)
 app.post('/api/admin/courses', async (req, res) => {
     try {
         const { courseId, courseName, durationYears, totalCredits } = req.body;
@@ -322,11 +258,7 @@ app.post('/api/admin/courses', async (req, res) => {
     }
 });
 
-/**
- * @route GET /api/admin/subjects
- * @description Exposes global list of curriculum subjects.
- * @access Restricted (Admin)
- */
+// Admin: Fetch all registered subjects
 app.get('/api/admin/subjects', async (req, res) => {
     try {
         const subjects = await Subject.find({});
@@ -337,11 +269,7 @@ app.get('/api/admin/subjects', async (req, res) => {
     }
 });
 
-/**
- * @route POST /api/admin/subjects
- * @description Commits new study units mapped to institutional programs.
- * @access Restricted (Admin)
- */
+// Admin: Add a new subject
 app.post('/api/admin/subjects', async (req, res) => {
     try {
         const { subjectCode, subjectName, courseId, semester } = req.body;
@@ -367,11 +295,7 @@ app.post('/api/admin/subjects', async (req, res) => {
     }
 });
 
-/**
- * ----------------------------------------------------------------------------
- * Server Initialization Process
- * ----------------------------------------------------------------------------
- */
+// Start the Express server
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
