@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Internal Continuous Assessment</title>
+    <link rel="stylesheet" href="../css/style-dashboard.css">
+    <style>
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        .data-table th { background: #0056b3; color: white; }
+    </style>
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div id="side-menu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <a href="dashboard.html">Home</a>
+        <a href="attendance.html">Attendance Tracker</a>
+        <a href="results.html">Exam Results</a>
+        <a href="ica.html" class="active">Assessments/ICA</a>
+        <a href="calendar.html">Academic Calendar</a>
+        <a href="fees.html">Fee Details</a>
+        <a href="helpdesk.html">Help Desk</a>
+    </div>
+
+    <div id="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <span class="hamburger-icon" onclick="toggleMenu()">&#9776;</span>
+                <img src="logo.png" alt="College Logo" class="logo">
+            </div>
+            <h1 class="portal-title">My Assessments (ICA)</h1>
+            <div class="header-right">
+                <div class="profile-icon" onclick="window.location.href='profile.html'">ME</div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="card">
+                <h2>ICA Marks Tracker</h2>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>ICA 1 (Out of 25)</th>
+                                <th>ICA 2 (Out of 25)</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ica-tbody">
+                            <tr><td colspan="5">Loading real data from MySQL...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        async function fetchIca() {
+            const studentId = localStorage.getItem('userId') || 'N005'; // fallback to seeded test student
+            try {
+                const res = await fetch(`http://localhost:3000/api/student/ica?studentId=${studentId}`);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('ica-tbody');
+                tbody.innerHTML = '';
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    data.data.forEach(record => {
+                        const dateObj = new Date(record.last_updated);
+                        const row = `<tr>
+                            <td>${record.subjectCode}</td>
+                            <td>${record.subjectName}</td>
+                            <td><strong style="color: #27ae60;">${record.ica1 || 0}</strong></td>
+                            <td><strong style="color: #27ae60;">${record.ica2 || 0}</strong></td>
+                            <td style="color: #7f8c8d; font-size: 13px;">${dateObj.toLocaleDateString()}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5">No ICA records found in Database.</td></tr>';
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('ica-tbody').innerHTML = '<tr><td colspan="5" style="color:red;">Error connecting to Node.js server!</td></tr>';
+            }
+        }
+        
+        window.onload = fetchIca;
+    </script>
+</body>
+</html>
