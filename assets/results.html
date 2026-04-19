@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Results</title>
+    <link rel="stylesheet" href="../css/style-dashboard.css">
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+    
+    <div id="side-menu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <a href="dashboard.html">Home</a>
+        <a href="attendance.html">Attendance Tracker</a>
+        <a href="results.html" class="active">Exam Results</a>
+        <a href="calendar.html">Academic Calendar</a>
+        <a href="fees.html">Fee Details</a>
+        <a href="helpdesk.html">Help Desk</a>
+    </div>
+
+    <div id="main-content">
+        <header class="top-header">
+            <div class="header-left"><span class="hamburger-icon" onclick="toggleMenu()">&#9776;</span><img src="logo.png" alt="Logo" class="logo"></div>
+            <h1 class="portal-title">Exam Transcripts</h1>
+            <div class="header-right"><div class="profile-icon" onclick="window.location.href='profile.html'">AA</div></div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="card">
+                <h2>Cumulative Performance</h2>
+                <div class="info-grid" style="margin-bottom: 20px;">
+                    <div class="info-badge highlight-badge">
+                        <span class="info-label">Overall CGPA</span>
+                        <span class="info-value">9.14 / 10.0</span>
+                    </div>
+                    <div class="info-badge">
+                        <span class="info-label">Total Credits</span>
+                        <span class="info-value">72 Earned</span>
+                    </div>
+                </div>
+
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Semester</th>
+                                <th>Month / Year</th>
+                                <th>Credits</th>
+                                <th>SGPA</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Semester III</td>
+                                <td>Dec 2025</td>
+                                <td>24</td>
+                                <td><strong class="status-good">9.20</strong></td>
+                                <td><a href="#" style="color:#0056b3;">Download PDF</a></td>
+                            </tr>
+                            <tr>
+                                <td>Semester II</td>
+                                <td>May 2025</td>
+                                <td>24</td>
+                                <td><strong class="status-good">9.05</strong></td>
+                                <td><a href="#" style="color:#0056b3;">Download PDF</a></td>
+                            </tr>
+                            <tr>
+                                <td>Semester I</td>
+                                <td>Dec 2024</td>
+                                <td>24</td>
+                                <td><strong class="status-good">9.18</strong></td>
+                                <td><a href="#" style="color:#0056b3;">Download PDF</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/app.js"></script>
+</body>
+</html>

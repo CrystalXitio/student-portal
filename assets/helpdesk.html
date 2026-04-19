@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Help Desk</title>
+    <link rel="stylesheet" href="../css/style-dashboard.css">
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+    
+    <div id="side-menu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <a href="dashboard.html">Home</a>
+        <a href="attendance.html">Attendance Tracker</a>
+        <a href="results.html">Exam Results</a>
+        <a href="calendar.html">Academic Calendar</a>
+        <a href="fees.html">Fee Details</a>
+        <a href="helpdesk.html" class="active">Help Desk</a>
+    </div>
+
+    <div id="main-content">
+        <header class="top-header">
+            <div class="header-left"><span class="hamburger-icon" onclick="toggleMenu()">&#9776;</span><img src="logo.png" alt="Logo" class="logo"></div>
+            <h1 class="portal-title">Support & Grievances</h1>
+            <div class="header-right"><div class="profile-icon" onclick="window.location.href='profile.html'">AA</div></div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="card" style="max-width: 600px;">
+                <h2>Raise a Ticket</h2>
+                <form onsubmit="event.preventDefault(); alert('Ticket Submitted Successfully!');">
+                    <div class="input-group">
+                        <label>Category</label>
+                        <select required>
+                            <option value="">Select Category...</option>
+                            <option value="it">IT & Portal Issues</option>
+                            <option value="academic">Academic & Examinations</option>
+                            <option value="admin">Administration & Fees</option>
+                            <option value="library">Library Services</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Subject</label>
+                        <input type="text" placeholder="Brief description of the issue" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Detailed Message</label>
+                        <textarea rows="5" placeholder="Provide full details here..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Ticket</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="../js/app.js"></script>
+</body>
+</html>

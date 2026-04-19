@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Teachers</title>
+    <link rel="stylesheet" href="../css/style-dashboard.css">
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+    <div id="side-menu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <a href="admin-dashboard.html">Dashboard Overview</a>
+        <a href="admin-students.html">Manage Students</a>
+        <a href="admin-teachers.html" class="active">Manage Teachers</a>
+        <a href="admin-courses.html">Manage Courses</a>
+        <a href="admin-subjects.html">Manage Subjects</a>
+        <a href="admin-classes.html">Manage Classes</a>
+        <a href="admin-fees.html">Fee Status</a>
+        <a href="admin-announcements.html">Announcements</a>
+        <a href="admin-tickets.html">Support Tickets</a>
+    </div>
+
+    <div id="main-content">
+        <header class="top-header">
+            <div class="header-left"><span class="hamburger-icon" onclick="toggleMenu()">&#9776;</span><img src="logo.png" alt="Logo" class="logo"></div>
+            <h1 class="portal-title">Manage Teachers</h1>
+            <div class="header-right">
+                <div class="top-icons">
+                    <div class="profile-icon" style="background-color: #d35400;" onclick="window.location.href='admin-profile.html'" title="View Profile">ADM</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="border: none; margin: 0;">Faculty Directory</h2>
+                    <button class="submit-btn" style="width: auto; margin: 0; background: #27ae60;" onclick="openCrudModal('Add New Teacher')">+ Add Teacher</button>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Emp ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Assigned Unique Subject</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FAC-1029</td>
+                                <td>Prof. Manish K. Arya</td>
+                                <td>Computer Engineering</td>
+                                <td>CVT (MBA Tech)</td>
+                                <td style="text-align: center;">
+                                    <button style="padding: 5px 10px; background: #f39c12; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="openCrudModal('Modify Teacher')">Edit</button>
+                                    <button style="padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="confirm('Delete this teacher?')">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="crud-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('crud-modal').style.display='none'">&times;</span>
+            <h3 id="crud-title">Add/Edit Details</h3>
+            <form onsubmit="event.preventDefault(); alert('Teacher details saved successfully!'); document.getElementById('crud-modal').style.display='none';">
+                <div class="input-group"><label>Full Name</label><input type="text" required></div>
+                <div class="input-group"><label>Employee ID</label><input type="text" required></div>
+                <div class="input-group">
+                    <label>Assign Unique Subject (Linked to Course)</label>
+                    <select required>
+                        <option value="">Select Subject...</option>
+                        <option value="cvt_mba">Complex Variables & Transforms (MBA Tech)</option>
+                        <option value="coa_mba">Computer Organization (MBA Tech)</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Enter / Save</button>
+            </form>
+        </div>
+    </div>
+    <script src="../js/app.js"></script>
+    <script>
+        function openCrudModal(title) {
+            document.getElementById('crud-title').innerText = title;
+            document.getElementById('crud-modal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
