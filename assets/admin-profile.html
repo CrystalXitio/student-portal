@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Profile</title>
+    <link rel="stylesheet" href="../css/style-dashboard.css">
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div id="side-menu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <a href="admin-dashboard.html">Dashboard Overview</a>
+        <a href="admin-students.html">Manage Students</a>
+        <a href="admin-teachers.html">Manage Teachers</a>
+        <a href="admin-courses.html">Manage Courses</a>
+        <a href="admin-subjects.html">Manage Subjects</a>
+        <a href="admin-classes.html">Manage Classes</a>
+        <a href="admin-fees.html">Fee Status</a>
+        <a href="admin-announcements.html">Announcements</a>
+        <a href="admin-tickets.html">Support Tickets</a>
+    </div>
+
+    <div id="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <span class="hamburger-icon" onclick="toggleMenu()">&#9776;</span>
+                <img src="logo.png" alt="Logo" class="logo">
+            </div>
+            <h1 class="portal-title">Administrator Profile</h1>
+            <div class="header-right">
+                <div class="top-icons">
+                    <div class="dropdown-container">
+                        <span class="icon" title="Settings" onclick="toggleDropdown('settings-dropdown')">&#9881;</span>
+                        <div class="dropdown-menu" id="settings-dropdown">
+                            <div class="dropdown-header">Settings</div>
+                            <a href="javascript:void(0)" class="settings-item" onclick="openPasswordModal()">Change Password</a>
+                            <a href="javascript:void(0)" class="settings-item" onclick="toggleTheme()">Appearance (Dark/Light)</a>
+                            <a href="../index.html" class="settings-item logout-link">Logout</a>
+                        </div>
+                    </div>
+                    <div class="profile-icon" style="background-color: #d35400; cursor: default;">ADM</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="card" style="max-width: 900px; width: 100%;">
+                
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 2px solid #f0f2f5; padding-bottom: 20px;">
+                    <div class="profile-icon" style="width: 80px; height: 80px; font-size: 32px; background-color: #d35400; cursor: default;">ADM</div>
+                    <div>
+                        <h2 style="border: none; padding: 0; margin: 0 0 5px 0;">System Administrator</h2>
+                        <p style="margin: 0; color: #666; font-weight: bold;">IT & Portal Management</p>
+                    </div>
+                </div>
+
+                <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Administrative Details</h3>
+                <div class="info-grid" style="margin-bottom: 30px;">
+                    <div class="info-badge">
+                        <span class="info-label">Admin ID</span>
+                        <span class="info-value">ADM-001</span>
+                    </div>
+                    <div class="info-badge highlight-badge">
+                        <span class="info-label">System Access Level</span>
+                        <span class="info-value">Super Admin</span>
+                    </div>
+                    <div class="info-badge">
+                        <span class="info-label">Account Status</span>
+                        <span class="info-value">Active</span>
+                    </div>
+                    <div class="info-badge">
+                        <span class="info-label">Last Login</span>
+                        <span class="info-value">Today, 08:45 AM</span>
+                    </div>
+                </div>
+
+                <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Contact & Location Information</h3>
+                <div class="info-grid" style="margin-bottom: 30px;">
+                    <div class="info-badge">
+                        <span class="info-label">Official Email</span>
+                        <span class="info-value">admin@nmims.in</span>
+                    </div>
+                    <div class="info-badge">
+                        <span class="info-label">Support Email</span>
+                        <span class="info-value">support@nmims.in</span>
+                    </div>
+                    <div class="info-badge">
+                        <span class="info-label">Contact No</span>
+                        <span class="info-value">+91 22 4233 4000</span>
+                    </div>
+                    <div class="info-badge">
+                        <span class="info-label">Office Location</span>
+                        <span class="info-value">Main Building, Ground Floor IT Cell</span>
+                    </div>
+                </div>
+
+                <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Recent System Activity</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Action Performed</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Today, 09:15 AM</td>
+                                <td>Resolved Ticket #TKT-001</td>
+                                <td>192.168.1.105</td>
+                            </tr>
+                            <tr>
+                                <td>Yesterday, 14:30 PM</td>
+                                <td>Broadcasted Announcement (Exam Schedule)</td>
+                                <td>192.168.1.105</td>
+                            </tr>
+                            <tr>
+                                <td>10 Apr 2026, 11:00 AM</td>
+                                <td>Added New Faculty (FAC-1029)</td>
+                                <td>192.168.1.105</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="password-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePasswordModal()">&times;</span>
+            <h3>Change Password</h3>
+            <div class="input-group">
+                <label>New Password</label>
+                <input type="password" placeholder="Enter new password">
+            </div>
+            <div class="input-group">
+                <label>Confirm New Password</label>
+                <input type="password" placeholder="Confirm new password">
+            </div>
+            <button class="submit-btn" onclick="closePasswordModal()">Enter</button>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>
