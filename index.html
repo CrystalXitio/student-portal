@@ -39,11 +39,7 @@
     </div>
 
     <script>
-        /**
-         * Authenticates user input based on provided identifier string.
-         * Diverts the login session to the appropriate tier (Admin, Teacher, or Student)
-         * depending on contextual substring matching.
-         */
+        // Redirect to appropriate dashboard based on user role hints
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
            

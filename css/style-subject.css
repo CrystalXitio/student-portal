@@ -204,7 +204,7 @@ body {
     margin-bottom: 10px;
 }
 
-/* --- DARK MODE OVERRIDES --- */
+/* Dark Mode */
 body.dark-mode .card {
     background-color: #1e293b;
     color: #e2e8f0;

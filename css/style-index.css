@@ -86,7 +86,7 @@ input:focus {
     background-color: #004494;
 }
 
-/* --- DARK MODE OVERRIDES --- */
+/* Dark Mode */
 body.dark-mode {
     background-color: #0b1120;
 }
